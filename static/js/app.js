@@ -70,13 +70,42 @@ d3.json("../samples.json").then((importData)=>{
         xaxis: {title: "OTU ID"}
     };
     Plotly.newPlot('bubble',bubbledata,bubblelayout);
-
-    d3.select("#selected-dropdown").text("first");
-    d3.select("select").on("change",function(d){
-        let selected = d3.select("#d3-dropdown").node().value;
-        console.log(selected);
-        d3.select("#selected-dropdown").text(selected);
-
-    })
+    function init(){
+    
+        let select =  d3.select("#selDataset");
+        d3.json("../samples.json").then((dropdata)=>{
+            let SampleName = dropdata.name
+            SampleName.forEach((sample)=> {
+                    select
+                    .append("option")
+                    .text(sample)
+                    .property("value",sample);
+                });
+            const first_Sample = SampleName[0];
+            buildCharts(first_Sample);
+            buildMetaData(first_Sample);        
+        });
+        }
+     function buildData(sample) {
+         d3.json("../sample.json").then((data) => {
+         let switchdata = data.metadata;
+         let results = switchdata.filter(x => x.id == sample);
+         let result = results[0] ;
+         let sample_data = d3.select("sample-metadata");
+         sample_data.html("");
+         Object.defineProperties(result),forEach(function([key,value]){
+             sample_data.append("h6").text(`$key:${value}`)
+        });
+        });
+        }
+    function newOption (newSample) {
+        buildCharts(newSample);
+        buildMetaData(newSample);
+    }
+     
+     init();
 });
+
+
+
 
